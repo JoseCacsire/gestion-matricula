@@ -46,7 +46,4 @@ public class MatriculaController {
         return modelMapper.map(model, MatriculaDTO.class);
     }
 
-    private Matricula convertToDocument(MatriculaDTO dto) {
-        return modelMapper.map(dto, Matricula.class);
-    }
 }

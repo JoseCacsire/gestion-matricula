@@ -3,6 +3,7 @@ package com.gestion_matricula.handler;
 import com.gestion_matricula.dto.EstudianteDTO;
 import com.gestion_matricula.model.Estudiante;
 import com.gestion_matricula.service.impl.EstudianteServiceImpl;
+import com.gestion_matricula.validator.RequestValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +20,7 @@ public class EstudianteHandler {
     @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
     private final EstudianteServiceImpl estudianteServiceImpl;
+    private final RequestValidator requestValidator;
 
     public Mono<ServerResponse> getAllEstudiantes(ServerRequest request) {
         return ServerResponse.ok()
@@ -40,6 +42,7 @@ public class EstudianteHandler {
         Mono<EstudianteDTO> estudianteDTOMono = request.bodyToMono(EstudianteDTO.class);
 
         return estudianteDTOMono
+                .flatMap(requestValidator::validate)
                 .flatMap(estudianteDTO -> estudianteServiceImpl.save(convertToDocument(estudianteDTO)))
                 .map(this::convertToDto)
                 .flatMap(estudiante -> ServerResponse.status(201)
@@ -53,6 +56,7 @@ public class EstudianteHandler {
         Mono<EstudianteDTO> estudianteDTOMono = request.bodyToMono(EstudianteDTO.class);
 
         return estudianteDTOMono
+                .flatMap(requestValidator::validate)
                 .map(e -> {
                     e.setId(id);
                     return e;

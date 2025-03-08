@@ -60,7 +60,7 @@ public class CursoController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<CursoDTO>> updateCurso(@PathVariable String id,  @RequestBody CursoDTO cursoDTO) {
+    public Mono<ResponseEntity<CursoDTO>> updateCurso(@PathVariable String id,@Valid  @RequestBody CursoDTO cursoDTO) {
         return Mono.just(cursoDTO)
                 .map(e-> {
                     e.setId(id);

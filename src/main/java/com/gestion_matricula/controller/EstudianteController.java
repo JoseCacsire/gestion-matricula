@@ -55,7 +55,7 @@ public class EstudianteController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<EstudianteDTO>> updateEstudiante(@PathVariable String id, @RequestBody EstudianteDTO estudianteDTO) {
+    public Mono<ResponseEntity<EstudianteDTO>> updateEstudiante(@PathVariable String id,@Valid @RequestBody EstudianteDTO estudianteDTO) {
         return Mono.just(estudianteDTO)
                 .map(e -> {
                     e.setId(id);

@@ -32,4 +32,11 @@ public class User {
 
     @Field
     private List<Role> roles;
+
+    public User(String username, String password, boolean status, List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.status = status;
+        this.roles = roles;
+    }
 }

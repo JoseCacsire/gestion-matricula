@@ -3,6 +3,7 @@ package com.gestion_matricula.handler;
 import com.gestion_matricula.dto.MatriculaDTO;
 import com.gestion_matricula.model.Matricula;
 import com.gestion_matricula.service.impl.MatriculaServiceImpl;
+import com.gestion_matricula.validator.RequestValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,12 +20,14 @@ public class MatriculaHandler {
     @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
     private final MatriculaServiceImpl matriculaServiceImpl;
+    private final RequestValidator requestValidator;
 
     public Mono<ServerResponse> registrarMatricula(ServerRequest request) {
 
         Mono<MatriculaDTO>  matriculaDTOMono = request.bodyToMono(MatriculaDTO.class);
 
         return matriculaDTOMono
+                .flatMap(requestValidator::validate)
                 .flatMap(matriculaDTO -> matriculaServiceImpl.save(convertToDocument(matriculaDTO)))
                 .map(this::convertToDto)
                 .flatMap(matricula -> ServerResponse.status(201)

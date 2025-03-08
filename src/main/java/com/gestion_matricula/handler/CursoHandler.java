@@ -3,6 +3,7 @@ package com.gestion_matricula.handler;
 import com.gestion_matricula.dto.CursoDTO;
 import com.gestion_matricula.model.Curso;
 import com.gestion_matricula.service.impl.CursoServiceImpl;
+import com.gestion_matricula.validator.RequestValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +21,7 @@ public class CursoHandler {
     @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
     private final CursoServiceImpl cursoServiceImpl;
+    private final RequestValidator requestValidator;
 
 
     public Mono<ServerResponse> getAllCursos(ServerRequest request) {
@@ -43,6 +45,7 @@ public class CursoHandler {
         Mono<CursoDTO> cursoDTOMono = request.bodyToMono(CursoDTO.class);
 
         return cursoDTOMono
+                .flatMap(requestValidator::validate)
                 .flatMap(e -> cursoServiceImpl.save(convertToDocument(e)))
                 .map(this::convertToDto)
                 .flatMap(e -> ServerResponse.status(HttpStatus.CREATED)
@@ -54,9 +57,10 @@ public class CursoHandler {
     public Mono<ServerResponse> updateCurso(ServerRequest request) {
         String id = request.pathVariable("id");
 
-        Mono<CursoDTO> cursoDTOMono = request.bodyToMono(CursoDTO.class);
+        Mono<CursoDTO> cursoDTOMono = request.bodyToMono( CursoDTO.class);
 
         return cursoDTOMono
+                .flatMap(requestValidator::validate)
                 .map(e->{
                     e.setId(id);
                     return e;
