@@ -2,6 +2,7 @@ package com.gestion_matricula.controller;
 
 import com.gestion_matricula.dto.EstudianteDTO;
 import com.gestion_matricula.model.Estudiante;
+import com.gestion_matricula.service.EstudianteService;
 import com.gestion_matricula.service.impl.EstudianteServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,11 @@ public class EstudianteController {
 
     @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
-    private final EstudianteServiceImpl estudianteServiceImpl;
+    private final EstudianteService estudianteService;
 
     @GetMapping
     public Mono<ResponseEntity<Flux<EstudianteDTO>>> getAllEstudiantes() {
-        Flux<EstudianteDTO> estudiantes = estudianteServiceImpl.findAll()
+        Flux<EstudianteDTO> estudiantes = estudianteService.findAll()
                 .map(this::convertToDto);
 
         return Mono.just(ResponseEntity.ok()
@@ -36,7 +37,7 @@ public class EstudianteController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<EstudianteDTO>> getEstudianteById(@PathVariable String id) {
-        return estudianteServiceImpl.findById(id)
+        return estudianteService.findById(id)
                 .map(this::convertToDto)
                 .map(e -> ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
@@ -46,7 +47,7 @@ public class EstudianteController {
 
     @PostMapping
     public Mono<ResponseEntity<EstudianteDTO>> createEstudiante(@Valid @RequestBody EstudianteDTO estudianteDTO) {
-        return estudianteServiceImpl.save(modelMapper.map(estudianteDTO, Estudiante.class))
+        return estudianteService.save(modelMapper.map(estudianteDTO, Estudiante.class))
                 .map(this::convertToDto)
                 .map(e -> ResponseEntity.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,7 +62,7 @@ public class EstudianteController {
                     e.setId(id);
                     return e;
                 })
-                .flatMap(e -> estudianteServiceImpl.update(id, convertToDocument(e)))
+                .flatMap(e -> estudianteService.update(id, convertToDocument(e)))
                 .map(this::convertToDto)
                 .map(e -> ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,19 +72,26 @@ public class EstudianteController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> deleteEstudiante(@PathVariable String id) {
-        return estudianteServiceImpl.delete(id);
+    public Mono<ResponseEntity<Void>> deleteEstudiante(@PathVariable String id) {
+        return estudianteService.delete(id)
+                .flatMap(result -> {
+                    if(Boolean.TRUE.equals(result)){
+                        return Mono.just(ResponseEntity.noContent().build());
+                    }else{
+                        return Mono.just(ResponseEntity.notFound().build());
+                    }
+                });
     }
 
     @GetMapping("/asc")
     public Flux<EstudianteDTO> getEstudiantesOrdenadosAsc() {
-        return estudianteServiceImpl.findAllOrderByEdadAsc()
+        return estudianteService.findAllOrderByEdadAsc()
                 .map(this::convertToDto);
     }
 
     @GetMapping("/desc")
     public Flux<EstudianteDTO> getEstudiantesOrdenadosDesc() {
-        return estudianteServiceImpl.findAllOrderByEdadDesc()
+        return estudianteService.findAllOrderByEdadDesc()
                 .map(this::convertToDto);
     }
 

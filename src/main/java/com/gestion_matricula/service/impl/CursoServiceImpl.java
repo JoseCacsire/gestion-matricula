@@ -19,8 +19,4 @@ public class CursoServiceImpl extends CRUDImpl<Curso, String> implements CursoSe
         return cursoRepository;
     }
 
-    public Mono<Void> delete(String id) {
-        return cursoRepository.deleteById(id);
-    }
-
 }

@@ -1,5 +1,4 @@
 package com.gestion_matricula.service.impl;
-
 import com.gestion_matricula.model.Role;
 import com.gestion_matricula.model.User;
 import com.gestion_matricula.repo.IGenericRepo;
@@ -46,14 +45,14 @@ public class UserServiceImpl extends CRUDImpl<User, String> implements IUserServ
 
     @Override
     public Mono<Void> createUserWithAdminRole() {
-        String username = "exampleUsername";
+        String username = "admin";
         return userRepo.findOneByUsername(username)
                 .switchIfEmpty(
-                        roleRepo.findById("67c681719ec49c36bab15fbd")
+                        roleRepo.findByName("ADMIN")  // Buscar por nombre en lugar de ID
                                 .flatMap(role -> {
                                     User newUser = new User(
                                             username,
-                                            "$2a$12$yw.jBSyTI5hPqeRV3dhwfubL/zewv7N.p07h9KNTysnf47ZOICTjm",
+                                            "$2a$12$OC2Rt4tCq2l/9Tjs.KDP7eJHJnAjdh7/NqRCOoiBph3xDFxxIrp8i",
                                             true,
                                             List.of(role)
                                     );
@@ -63,16 +62,17 @@ public class UserServiceImpl extends CRUDImpl<User, String> implements IUserServ
                 .then();  // Si ya existe, simplemente se completa sin insertar
     }
 
+
     @Override
     public Mono<Void> createUserWithUserRole() {
-        String username = "userUsername";
+        String username = "user";
         return userRepo.findOneByUsername(username)
                 .switchIfEmpty(
-                        roleRepo.findById("67c681719ec49c36bab15fbe")
+                        roleRepo.findByName("USER")
                                 .flatMap(role -> {
                                     User newUser = new User(
                                             username,
-                                            "$2a$12$yw.jBSyTI5hPqeRV3dhwfubL/zewv7N.p07h9KNTysnf47ZOICTjm",
+                                            "$2a$12$oxfL1WjUb75abWIy47.AUetGu8x.uklQYZwoQk04AkC2YsUERCMKa",
                                             true,
                                             List.of(role)
                                     );

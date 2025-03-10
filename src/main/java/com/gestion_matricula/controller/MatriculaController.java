@@ -2,6 +2,7 @@ package com.gestion_matricula.controller;
 
 import com.gestion_matricula.dto.MatriculaDTO;
 import com.gestion_matricula.model.Matricula;
+import com.gestion_matricula.service.MatriculaService;
 import com.gestion_matricula.service.impl.MatriculaServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,11 @@ public class MatriculaController {
 
     @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
-    private final MatriculaServiceImpl matriculaServiceImpl;
+    private final MatriculaService matriculaService;
 
     @PostMapping
     public Mono<ResponseEntity<MatriculaDTO>> registrarMatricula(@Valid @RequestBody MatriculaDTO matriculaDTO) {
-        return matriculaServiceImpl.save(modelMapper.map(matriculaDTO, Matricula.class))
+        return matriculaService.save(modelMapper.map(matriculaDTO, Matricula.class))
                 .map(this::convertToDto)
                 .map(e -> ResponseEntity.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -34,7 +35,7 @@ public class MatriculaController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<MatriculaDTO>> getMatriculaById(@PathVariable String id) {
-        return matriculaServiceImpl.findById(id)
+        return matriculaService.findById(id)
                 .map(this::convertToDto)
                 .map(e -> ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)

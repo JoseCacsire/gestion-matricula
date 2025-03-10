@@ -2,7 +2,6 @@ package com.gestion_matricula.service.impl;
 
 import com.gestion_matricula.repo.IGenericRepo;
 import com.gestion_matricula.service.ICRUD;
-import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -30,18 +29,18 @@ public abstract class CRUDImpl<T, ID> implements ICRUD<T, ID> {
         return getRepo().findById(id);
     }
 
-//    @Override
-//    public Mono<Boolean> delete(ID id) {
-//        return getRepo().findById(id)
-//                .hasElement()
-//                .flatMap(result -> {
-//                    if(result){
-//                        return getRepo().deleteById(id).thenReturn(true);
-//                    }else{
-//                        return Mono.just(false);
-//                    }
-//                });
-//    }
+    @Override
+    public Mono<Boolean> delete(ID id) {
+        return getRepo().findById(id)
+                .hasElement()
+                .flatMap(result -> {
+                    if(result){
+                        return getRepo().deleteById(id).thenReturn(true);
+                    }else{
+                        return Mono.just(false);
+                    }
+                });
+    }
 
 
 }

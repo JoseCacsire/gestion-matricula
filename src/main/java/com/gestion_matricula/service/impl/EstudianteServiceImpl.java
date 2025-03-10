@@ -7,7 +7,6 @@ import com.gestion_matricula.service.EstudianteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -20,14 +19,12 @@ public class EstudianteServiceImpl extends CRUDImpl<Estudiante, String> implemen
         return estudianteRepository;
     }
 
-    public Mono<Void> delete(String id) {
-        return estudianteRepository.deleteById(id);
-    }
-
+    @Override
     public Flux<Estudiante> findAllOrderByEdadAsc() {
         return estudianteRepository.findAllByOrderByEdadAsc();
     }
 
+    @Override
     public Flux<Estudiante> findAllOrderByEdadDesc() {
         return estudianteRepository.findAllByOrderByEdadDesc();
     }

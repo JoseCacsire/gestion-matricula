@@ -15,12 +15,11 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Insertar los roles ADMIN y USER al iniciar la aplicación
-        roleService.insertRolesIfAbsent().subscribe();
-        // Insertar el usuario admin al iniciar la aplicación
-        userService.createUserWithAdminRole().subscribe();
-        // Insertar el usuario user al iniciar la aplicación
-        userService.createUserWithUserRole().subscribe();
-
+        roleService.insertRolesIfAbsent()
+                .then(userService.createUserWithAdminRole())  // Espera a que los roles se inserten antes de crear el usuario admin
+                .then(userService.createUserWithUserRole())   // Luego crea el usuario "user"
+                .subscribe();
     }
+
 
 }

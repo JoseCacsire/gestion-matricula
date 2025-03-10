@@ -2,7 +2,7 @@ package com.gestion_matricula.controller;
 
 import com.gestion_matricula.dto.CursoDTO;
 import com.gestion_matricula.model.Curso;
-import com.gestion_matricula.service.impl.CursoServiceImpl;
+import com.gestion_matricula.service.CursoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,7 +22,7 @@ public class CursoController {
 
     @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
-    private final CursoServiceImpl cursoServiceImpl;
+    private final CursoService cursoServiceImpl;
 
     @GetMapping
     public Mono<ResponseEntity<Flux<CursoDTO>>> getAllCursos() {
@@ -77,8 +77,15 @@ public class CursoController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> deleteCurso(@PathVariable String id) {
-        return cursoServiceImpl.delete(id);
+    public Mono<ResponseEntity<Void>> deleteCurso(@PathVariable String id) {
+        return cursoServiceImpl.delete(id)
+                .flatMap(result -> {
+                    if(Boolean.TRUE.equals(result)){
+                        return Mono.just(ResponseEntity.noContent().build());
+                    }else{
+                        return Mono.just(ResponseEntity.notFound().build());
+                    }
+                });
     }
 
     private CursoDTO convertToDto(Curso model){
